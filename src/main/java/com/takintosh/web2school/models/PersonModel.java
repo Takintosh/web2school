@@ -16,8 +16,14 @@ public class PersonModel extends RepresentationModel<PersonModel> implements Ser
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID idPerson;
+
+    @Column(nullable = false, length = 50)
     private String name;
+
+    @Column(nullable = false, length = 50)
     private String surname;
+
+    @Column(nullable = false, length = 20)
     private String identification;
     private String email;
     private String phone;

@@ -14,8 +14,10 @@ public class StudentModel extends PersonModel implements Serializable {
     @JoinColumn(name = "idCourse")
     private CourseModel course;
 
+    @Column(nullable = false, length = 100)
     private String registration;
     private Number semester;
+    @Column(nullable = false, length = 20)
     private String status;
 
     // Getters & Setters

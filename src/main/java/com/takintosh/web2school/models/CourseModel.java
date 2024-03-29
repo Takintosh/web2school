@@ -15,8 +15,12 @@ public class CourseModel extends RepresentationModel<CourseModel> implements Ser
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID idCourse;
-    private String name;
+
+    @Column(length = 1000)
     private String description;
+
+    @Column(nullable = false, length = 100)
+    private String name;
 
     // Getters & Setters
     public UUID getIdCourse() {

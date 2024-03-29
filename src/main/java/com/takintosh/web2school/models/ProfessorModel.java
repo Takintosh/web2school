@@ -16,6 +16,7 @@ public class ProfessorModel extends PersonModel implements Serializable {
 
     private String title;
     private String department;
+    @Column(nullable = false, length = 20)
     private Number siape;
 
     // Getters & Setters
