@@ -15,7 +15,7 @@ public class StudentModel extends PersonModel implements Serializable {
     private CourseModel course;
 
     private String registration;
-    private String semester;
+    private Number semester;
     private String status;
 
     // Getters & Setters
@@ -25,10 +25,10 @@ public class StudentModel extends PersonModel implements Serializable {
     public void setRegistration(String registration) {
         this.registration = registration;
     }
-    public String getSemester() {
+    public Number getSemester() {
         return semester;
     }
-    public void setSemester(String semester) {
+    public void setSemester(Number semester) {
         this.semester = semester;
     }
     public String getStatus() {
