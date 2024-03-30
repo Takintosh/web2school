@@ -16,7 +16,7 @@ public class StudentModel extends PersonModel implements Serializable {
 
     @Column(nullable = false, length = 100)
     private String registration;
-    private Number semester;
+    private Integer semester;
     @Column(nullable = false, length = 20)
     private String status;
 
@@ -27,10 +27,10 @@ public class StudentModel extends PersonModel implements Serializable {
     public void setRegistration(String registration) {
         this.registration = registration;
     }
-    public Number getSemester() {
+    public Integer getSemester() {
         return semester;
     }
-    public void setSemester(Number semester) {
+    public void setSemester(Integer semester) {
         this.semester = semester;
     }
     public String getStatus() {

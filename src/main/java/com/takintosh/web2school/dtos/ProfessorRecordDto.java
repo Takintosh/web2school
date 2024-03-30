@@ -1,6 +1,7 @@
 package com.takintosh.web2school.dtos;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.UUID;
 
@@ -14,10 +15,10 @@ public record ProfessorRecordDto(
         String city,
         String state,
         String country,
-        Number zipCode,
+        Integer zipCode,
         String title,
         String department,
-        @NotBlank Number siape,
+        @NotNull Integer siape,
         UUID courseId
 
 ) {
