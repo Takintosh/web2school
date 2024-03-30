@@ -40,4 +40,11 @@ public class StudentModel extends PersonModel implements Serializable {
         this.status = status;
     }
 
+    public CourseModel getCourse() {
+        return course;
+    }
+    public void setCourse(CourseModel course) {
+        this.course = course;
+    }
+
 }

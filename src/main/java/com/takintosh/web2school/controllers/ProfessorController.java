@@ -3,6 +3,7 @@ package com.takintosh.web2school.controllers;
 import com.takintosh.web2school.dtos.ProfessorRecordDto;
 import com.takintosh.web2school.models.CourseModel;
 import com.takintosh.web2school.models.ProfessorModel;
+import com.takintosh.web2school.models.StudentModel;
 import com.takintosh.web2school.repositories.CourseRepository;
 import com.takintosh.web2school.repositories.ProfessorRepository;
 import jakarta.validation.Valid;
@@ -89,15 +90,18 @@ public class ProfessorController {
             @PathVariable UUID idProfessor,
             @PathVariable UUID idCourse) {
 
-        Optional<ProfessorModel> professorOptional = professorRepository.findById(idProfessor);
-        Optional<CourseModel> courseOptional = courseRepository.findById(idCourse);
+        Optional<ProfessorModel> professor0 = professorRepository.findById(idProfessor);
+        Optional<CourseModel> courseO = courseRepository.findById(idCourse);
 
-        if (professorOptional.isEmpty() || courseOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Professor or course not found.");
+        if (professor0.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Professor not found.");
+        }
+        if(courseO.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course not found.");
         }
 
-        ProfessorModel professor = professorOptional.get();
-        CourseModel course = courseOptional.get();
+        ProfessorModel professor = professor0.get();
+        CourseModel course = courseO.get();
 
         professor.setCourse(course);
         professorRepository.save(professor);
