@@ -16,11 +16,11 @@ public class CourseModel extends RepresentationModel<CourseModel> implements Ser
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID idCourse;
 
-    @Column(length = 1000)
-    private String description;
-
     @Column(nullable = false, length = 100)
     private String name;
+
+    @Column(length = 1000)
+    private String description;
 
     // Getters & Setters
     public UUID getIdCourse() {
