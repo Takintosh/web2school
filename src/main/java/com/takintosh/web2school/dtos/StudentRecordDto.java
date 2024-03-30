@@ -14,9 +14,9 @@ public record StudentRecordDto(
         String city,
         String state,
         String country,
-        Number zipCode,
+        Integer zipCode,
         @NotBlank String registration,
-        Number semester,
+        Integer semester,
         @NotBlank String status,
         UUID idCourse
 ) {

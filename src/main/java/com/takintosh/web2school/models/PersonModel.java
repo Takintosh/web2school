@@ -31,7 +31,7 @@ public class PersonModel extends RepresentationModel<PersonModel> implements Ser
     private String city;
     private String state;
     private String country;
-    private Number zipCode;
+    private Integer zipCode;
 
     // Getters & Setters
     public UUID getIdPerson() {
@@ -94,10 +94,10 @@ public class PersonModel extends RepresentationModel<PersonModel> implements Ser
     public void setCountry(String country) {
         this.country = country;
     }
-    public Number getZipCode() {
+    public Integer getZipCode() {
         return zipCode;
     }
-    public void setZipCode(Number zipCode) {
+    public void setZipCode(Integer zipCode) {
         this.zipCode = zipCode;
     }
 
