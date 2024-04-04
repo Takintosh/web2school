@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>Course Details</title>
+    </head>
+    <body>
+        <h1>Course Details</h1>
+        <p><strong>Name:</strong> <span th:text="${name}"></span></p>
+        <p><strong>Description:</strong> <span th:text="${description}"></span></p>
+
+        <a th:href="@{/courses/}">Back</a> |
+        <a th:href="@{/courses/update/{id}(id=${id})}">Edit</a> |
+        <a th:href="@{/courses/delete/{id}(id=${id})}">Delete</a>
+    </body>
+</html>
