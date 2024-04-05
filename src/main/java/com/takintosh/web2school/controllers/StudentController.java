@@ -10,16 +10,17 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-
-@RestController
+@Controller
+@RequestMapping("/students")
 public class StudentController {
 
     @Autowired
@@ -27,76 +28,126 @@ public class StudentController {
     @Autowired
     CourseRepository courseRepository;
 
+    // Create a new student form
+    @GetMapping("/create")
+    public String studentCreateGet() {
+        return "students/Create";
+    }
     // Create a new student
-    @PostMapping("/students")
-    public ResponseEntity<StudentModel> saveStudent(@RequestBody @Valid StudentRecordDto studentRecordDto) {
-        var studentModel = new StudentModel();
+    @PostMapping("/create")
+    public String courseCreatePost(@Valid @ModelAttribute StudentRecordDto studentRecordDto, BindingResult result) {
+        if (result.hasErrors()) {
+            return "students/Create";
+        }
+        StudentModel studentModel = new StudentModel();
         BeanUtils.copyProperties(studentRecordDto, studentModel);
-        return ResponseEntity.status(HttpStatus.CREATED).body(studentRepository.save(studentModel));
+        studentRepository.save(studentModel);
+        return "redirect:/students/";
     }
 
     // Get all students
-    @GetMapping("/students")
-    public ResponseEntity<List<StudentModel>> getAllStudents() {
-        List<StudentModel> studentsList = studentRepository.findAll();
-        if(!studentsList.isEmpty()) {
-            for(StudentModel student : studentsList) {
-                UUID id = student.getIdPerson();
-                student.add(linkTo(methodOn(StudentController.class).getOneStudent(id)).withSelfRel());
-            }
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(studentsList);
+    @GetMapping("/")
+    public ModelAndView studentsList() {
+        ModelAndView mv = new ModelAndView("students/ReadAll");
+        List<StudentModel> students = studentRepository.findAll();
+        mv.addObject("students", students);
+        return mv;
     }
 
     // Get one student
-    @GetMapping("/students/{id}")
-    public ResponseEntity<Object> getOneStudent(@PathVariable(value="id") UUID id) {
-        var studentO = studentRepository.findById(id);
-        if(studentO.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Student not found.");
-        }
-        studentO.get().add(linkTo(methodOn(StudentController.class).getAllStudents()).withRel("Students List"));
-        return ResponseEntity.status(HttpStatus.OK).body(studentO.get());
+    @GetMapping("/show/{id}")
+    public ModelAndView getOneStudent(@PathVariable(value="id") UUID id) {
+        ModelAndView mv = new ModelAndView("students/ReadOne");
+        Optional<StudentModel> studentO = studentRepository.findById(id);
+        mv.addObject("name", studentO.get().getName());
+        mv.addObject("surname", studentO.get().getSurname());
+        mv.addObject("identification", studentO.get().getIdentification());
+        mv.addObject("email", studentO.get().getEmail());
+        mv.addObject("phone", studentO.get().getPhone());
+        mv.addObject("address", studentO.get().getAddress());
+        mv.addObject("city", studentO.get().getCity());
+        mv.addObject("state", studentO.get().getState());
+        mv.addObject("country", studentO.get().getCountry());
+        mv.addObject("zipCode", studentO.get().getZipCode());
+        mv.addObject("registration", studentO.get().getRegistration());
+        mv.addObject("semester", studentO.get().getSemester());
+        mv.addObject("status", studentO.get().getStatus());
+        mv.addObject("course", studentO.get().getCourse());
+        return mv;
     }
 
+    // Update a student form
+    @GetMapping("/update/{id}")
+    public ModelAndView updateStudentGet(@PathVariable(value="id") UUID id) {
+        ModelAndView mv = new ModelAndView("students/Update");
+        Optional<StudentModel> studentO = studentRepository.findById(id);
+        mv.addObject("name", studentO.get().getName());
+        mv.addObject("surname", studentO.get().getSurname());
+        mv.addObject("identification", studentO.get().getIdentification());
+        mv.addObject("email", studentO.get().getEmail());
+        mv.addObject("phone", studentO.get().getPhone());
+        mv.addObject("address", studentO.get().getAddress());
+        mv.addObject("city", studentO.get().getCity());
+        mv.addObject("state", studentO.get().getState());
+        mv.addObject("country", studentO.get().getCountry());
+        mv.addObject("zipCode", studentO.get().getZipCode());
+        mv.addObject("registration", studentO.get().getRegistration());
+        mv.addObject("semester", studentO.get().getSemester());
+        mv.addObject("status", studentO.get().getStatus());
+        return mv;
+    }
     // Update a student
-    @PutMapping("/students/{id}")
-    public ResponseEntity<Object>
-    updateStudent(@PathVariable(value="id") UUID id, @RequestBody @Valid StudentRecordDto studentRecordDto) {
+    @PostMapping("/update/{id}")
+    public String updateStudentPost(@Valid @ModelAttribute StudentRecordDto studentRecordDto, BindingResult result, @PathVariable(value="id") UUID id) {
+
         Optional<StudentModel> studentO = studentRepository.findById(id);
         if(studentO.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Student not found.");
+            return "redirect:/students/";
+        }
+        if(result.hasErrors()) {
+            return "students/Update";
         }
         StudentModel studentModel = studentO.get();
         BeanUtils.copyProperties(studentRecordDto, studentModel);
-        return ResponseEntity.status(HttpStatus.OK).body(studentRepository.save(studentModel));
+        studentRepository.save(studentModel);
+        return "redirect:/students/";
     }
 
     // Delete a student
-    @DeleteMapping("/students/{id}")
-    public ResponseEntity<Object> deleteStudent(@PathVariable(value = "id") UUID id) {
+    @GetMapping("/delete/{id}")
+    public String deleteStudent(@PathVariable(value="id") UUID id) {
+
         Optional<StudentModel> studentO = studentRepository.findById(id);
         if(studentO.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Student not found.");
+            return "redirect:/students/";
         }
         studentRepository.delete(studentO.get());
-        return ResponseEntity.status(HttpStatus.OK).body("Student deleted.");
+        return "redirect:/students/";
+    }
+
+    // Set a course to a student form
+    @GetMapping("/show/{id}/assign-course")
+    public ModelAndView assignCourseToStudentGet(@PathVariable(value="id") UUID id) {
+        ModelAndView mv = new ModelAndView("students/AssignCourse");
+        Optional<StudentModel> studentO = studentRepository.findById(id);
+        mv.addObject("student", studentO.get());
+        List<CourseModel> courses = courseRepository.findAll();
+        mv.addObject("courses", courses);
+        return mv;
     }
 
     // Set a course to a student
-    @PutMapping("/students/{id}/assign-course/{idCourse}")
-    public ResponseEntity<Object> assignCourseToStudent(
-            @PathVariable(value = "id") UUID idStudent,
-            @PathVariable(value = "idCourse") UUID idCourse) {
+    @PostMapping("/show/{id}/assign-course")
+    public String assignCourseToStudentPost(@RequestParam(value="course") UUID idCourse, @PathVariable(value="id") UUID id) {
 
-        Optional<StudentModel> studentO = studentRepository.findById(idStudent);
+        Optional<StudentModel> studentO = studentRepository.findById(id);
         Optional<CourseModel> courseO = courseRepository.findById(idCourse);
 
         if(studentO.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Student not found.");
+            return "redirect:/students/";
         }
         if(courseO.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course not found.");
+            return "redirect:/students/";
         }
 
         StudentModel student = studentO.get();
@@ -105,8 +156,7 @@ public class StudentController {
         student.setCourse(course);
         studentRepository.save(student);
 
-        return ResponseEntity.status(HttpStatus.OK).body("Course assigned to student successfully.");
+        return "redirect:/students/";
     }
-
 
 }
