@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<title>Edit Course</title>
+</head>
+<body>
+<h1>Edit Course</h1>
+<form th:action="@{/courses/update/{id}(id=${id})}" method="post">
+
+	<label for="name">Name:</label>
+	<input type="text" id="name" name="name" th:value="${name}" required>
+	<br>
+	<label for="description">Description:</label>
+	<textarea id="description" name="description" rows="4" th:text="${description}" required></textarea>
+	<br>
+
+	<button type="submit">Submit</button>
+	<a th:href="@{/courses/show/{id}(id=${id})}">Cancel</a>
+</form>
+</body>
+</html>

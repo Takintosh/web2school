@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>Student Details</title>
+    </head>
+    <body>
+        <h1>Student Details</h1>
+        <p><strong>Name:</strong> <span th:text="${name}"></span></p>
+        <p><strong>Surname:</strong> <span th:text="${surname}"></span></p>
+        <p><strong>Identification:</strong> <span th:text="${identification}"></span></p>
+        <p><strong>Email:</strong> <span th:text="${email}"></span></p>
+        <p><strong>Phone:</strong> <span th:text="${phone}"></span></p>
+        <p><strong>Address:</strong> <span th:text="${address}"></span></p>
+        <p><strong>City:</strong> <span th:text="${city}"></span></p>
+        <p><strong>State:</strong> <span th:text="${state}"></span></p>
+        <p><strong>Country:</strong> <span th:text="${country}"></span></p>
+        <p><strong>ZipCode:</strong> <span th:text="${zipCode}"></span></p>
+        <p><strong>Registration:</strong> <span th:text="${registration}"></span></p>
+        <p><strong>Semester:</strong> <span th:text="${semester}"></span></p>
+        <p><strong>Status:</strong> <span th:text="${status}"></span></p>
+        <!-- Check if course is not null -->
+            <p><strong>Course:</strong>
+                <span th:if="${course == null}" >None</span>
+                <span th:unless="${course == null}" th:text="${course.name}"></span>
+            </p>
+
+        <a th:href="@{/students/}">Back</a> |
+        <a th:href="@{/students/update/{id}(id=${id})}">Edit</a> |
+        <a th:href="@{/students/delete/{id}(id=${id})}">Delete</a>
+    </body>
+</html>

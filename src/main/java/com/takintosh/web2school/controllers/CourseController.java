@@ -6,77 +6,96 @@ import com.takintosh.web2school.repositories.CourseRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-
-@RestController
+@Controller
+@RequestMapping("/courses")
 public class CourseController {
 
     @Autowired
     CourseRepository courseRepository;
 
-    // Create a new course
-    @PostMapping("/courses")
-    public ResponseEntity<CourseModel> saveCourse(@RequestBody @Valid CourseRecordDto courseRecordDto) {
-        var courseModel = new CourseModel();
-        BeanUtils.copyProperties(courseRecordDto, courseModel);
-        return ResponseEntity.status(HttpStatus.CREATED).body(courseRepository.save(courseModel));
+    // Get all courses
+    @GetMapping("/")
+    public ModelAndView coursesList() {
+        ModelAndView mv = new ModelAndView("courses/ReadAll");
+        List<CourseModel> courses = courseRepository.findAll();
+        mv.addObject("courses", courses);
+        return mv;
     }
 
-    // Get all courses+
-    @GetMapping("/courses")
-    public ResponseEntity<List<CourseModel>> getAllCourses() {
-        List<CourseModel> coursesList = courseRepository.findAll();
-        if(!coursesList.isEmpty()) {
-            for(CourseModel course : coursesList) {
-                UUID id = course.getIdCourse();
-                course.add(linkTo(methodOn(CourseController.class).getOneCourse(id)).withSelfRel());
-            }
+    // Create a new course form
+    @GetMapping("/create")
+    public String courseCreateGet() {
+        return "courses/Create";
+    }
+
+    // Create a new course
+    @PostMapping("/create")
+    public String courseCreatePost(@Valid @ModelAttribute CourseRecordDto courseRecordDto, BindingResult result) {
+        if (result.hasErrors()) {
+            return "courses/Create";
         }
-        return ResponseEntity.status(HttpStatus.OK).body(coursesList);
+        CourseModel courseModel = new CourseModel();
+        BeanUtils.copyProperties(courseRecordDto, courseModel);
+        courseRepository.save(courseModel);
+        return "redirect:/courses/";
     }
 
     // Get one course
-    @GetMapping("/courses/{id}")
-    public ResponseEntity<Object> getOneCourse(@PathVariable(value="id") UUID id) {
+    @GetMapping("/show/{id}")
+    public ModelAndView getOneCourse(@PathVariable(value="id") UUID id) {
+        ModelAndView mv = new ModelAndView("courses/ReadOne");
         Optional<CourseModel> courseO = courseRepository.findById(id);
-        if(courseO.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course not found.");
-        }
-        courseO.get().add(linkTo(methodOn(CourseController.class).getAllCourses()).withRel("Courses List"));
-        return ResponseEntity.status(HttpStatus.OK).body(courseO.get());
+        mv.addObject("name", courseO.get().getName());
+        mv.addObject("description", courseO.get().getDescription());
+        return mv;
+    }
+
+    // Update a course form
+    @GetMapping("/update/{id}")
+    public ModelAndView updateCourseGet(@PathVariable(value="id") UUID id) {
+        ModelAndView mv = new ModelAndView("courses/Update");
+        Optional<CourseModel> courseO = courseRepository.findById(id);
+        mv.addObject("name", courseO.get().getName());
+        mv.addObject("description", courseO.get().getDescription());
+        return mv;
     }
 
     // Update a course
-    @PutMapping("/courses/{id}")
-    public ResponseEntity<Object>
-    updateCourse(@PathVariable(value="id") UUID id, @RequestBody @Valid CourseRecordDto courseRecordDto) {
+    @PostMapping("/update/{id}")
+    public String updateCoursePost(@Valid @ModelAttribute CourseRecordDto courseRecordDto, BindingResult result, @PathVariable(value="id") UUID id) {
+
         Optional<CourseModel> courseO = courseRepository.findById(id);
         if(courseO.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course not found.");
+            return "redirect:/courses/";
+        }
+        if(result.hasErrors()) {
+            return "courses/Update";
         }
         CourseModel courseModel = courseO.get();
         BeanUtils.copyProperties(courseRecordDto, courseModel);
-        return ResponseEntity.status(HttpStatus.OK).body(courseRepository.save(courseModel));
+        courseRepository.save(courseModel);
+        return "redirect:/courses/";
     }
 
     // Delete a course
-    @DeleteMapping("/courses/{id}")
-    public ResponseEntity<Object> deleteCourse(@PathVariable(value="id") UUID id) {
+    @GetMapping("/delete/{id}")
+    public String deleteCourse(@PathVariable(value="id") UUID id) {
+
         Optional<CourseModel> courseO = courseRepository.findById(id);
         if(courseO.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course not found.");
+            return "redirect:/courses/";
         }
         courseRepository.delete(courseO.get());
-        return ResponseEntity.status(HttpStatus.OK).body("Course deleted.");
+        return "redirect:/courses/";
     }
 
 }
