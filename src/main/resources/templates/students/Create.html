@@ -47,7 +47,11 @@
 	<label for="status">Status:</label>
 	<input type="text" id="status" name="status">
 	<br>
-
+	<label for="courseSelect">Course:</label>
+	<select id="courseSelect" name="idCourse">
+		<option  th:each="course : ${courses}" th:value="${course.idCourse}" th:text="${course.name}"></option>
+	</select>
+	<br>
 	<button type="submit">Submit</button>
 	<a th:href="@{/students/}">Cancel</a>
 </form>

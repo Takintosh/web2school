@@ -47,6 +47,11 @@
 		<label for="status">Status:</label>
 		<input type="text" id="status" name="status" th:value="${status}">
 		<br>
+		<label for="courseSelect">Course:</label>
+		<select id="courseSelect" name="idCourse">
+			<option  th:each="course : ${courses}" th:value="${course.idCourse}" th:text="${course.name}" th:selected="${course.idCourse == courseAssigned.idCourse }"></option>
+		</select>
+		<br>
 
 		<button type="submit">Submit</button>
 		<a th:href="@{/students/show/{id}(id=${id})}">Cancel</a>

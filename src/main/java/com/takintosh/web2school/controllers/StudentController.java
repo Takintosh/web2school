@@ -30,17 +30,26 @@ public class StudentController {
 
     // Create a new student form
     @GetMapping("/create")
-    public String studentCreateGet() {
-        return "students/Create";
+    public ModelAndView studentCreateGet() {
+        ModelAndView mv = new ModelAndView("students/Create");
+        List<CourseModel> courses = courseRepository.findAll();
+        mv.addObject("courses", courses);
+        return mv;
     }
+
     // Create a new student
     @PostMapping("/create")
-    public String courseCreatePost(@Valid @ModelAttribute StudentRecordDto studentRecordDto, BindingResult result) {
+    public String studentCreatePost(@Valid @ModelAttribute StudentRecordDto studentRecordDto, BindingResult result) {
         if (result.hasErrors()) {
             return "students/Create";
         }
+
         StudentModel studentModel = new StudentModel();
         BeanUtils.copyProperties(studentRecordDto, studentModel);
+
+        CourseModel course = courseRepository.findById(studentRecordDto.idCourse()).get();
+        studentModel.setCourse(course);
+
         studentRepository.save(studentModel);
         return "redirect:/students/";
     }
@@ -81,6 +90,7 @@ public class StudentController {
     public ModelAndView updateStudentGet(@PathVariable(value="id") UUID id) {
         ModelAndView mv = new ModelAndView("students/Update");
         Optional<StudentModel> studentO = studentRepository.findById(id);
+        List<CourseModel> courses = courseRepository.findAll();
         mv.addObject("name", studentO.get().getName());
         mv.addObject("surname", studentO.get().getSurname());
         mv.addObject("identification", studentO.get().getIdentification());
@@ -94,6 +104,8 @@ public class StudentController {
         mv.addObject("registration", studentO.get().getRegistration());
         mv.addObject("semester", studentO.get().getSemester());
         mv.addObject("status", studentO.get().getStatus());
+        mv.addObject("courseAssigned", studentO.get().getCourse());
+        mv.addObject("courses", courses);
         return mv;
     }
     // Update a student
@@ -109,6 +121,10 @@ public class StudentController {
         }
         StudentModel studentModel = studentO.get();
         BeanUtils.copyProperties(studentRecordDto, studentModel);
+
+        CourseModel course = courseRepository.findById(studentRecordDto.idCourse()).get();
+        studentModel.setCourse(course);
+
         studentRepository.save(studentModel);
         return "redirect:/students/";
     }
@@ -125,38 +141,5 @@ public class StudentController {
         return "redirect:/students/";
     }
 
-    // Set a course to a student form
-    @GetMapping("/show/{id}/assign-course")
-    public ModelAndView assignCourseToStudentGet(@PathVariable(value="id") UUID id) {
-        ModelAndView mv = new ModelAndView("students/AssignCourse");
-        Optional<StudentModel> studentO = studentRepository.findById(id);
-        mv.addObject("student", studentO.get());
-        List<CourseModel> courses = courseRepository.findAll();
-        mv.addObject("courses", courses);
-        return mv;
-    }
-
-    // Set a course to a student
-    @PostMapping("/show/{id}/assign-course")
-    public String assignCourseToStudentPost(@RequestParam(value="course") UUID idCourse, @PathVariable(value="id") UUID id) {
-
-        Optional<StudentModel> studentO = studentRepository.findById(id);
-        Optional<CourseModel> courseO = courseRepository.findById(idCourse);
-
-        if(studentO.isEmpty()) {
-            return "redirect:/students/";
-        }
-        if(courseO.isEmpty()) {
-            return "redirect:/students/";
-        }
-
-        StudentModel student = studentO.get();
-        CourseModel course = courseO.get();
-
-        student.setCourse(course);
-        studentRepository.save(student);
-
-        return "redirect:/students/";
-    }
 
 }
