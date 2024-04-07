@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="UTF-8">
+		<title>Professors</title>
+	</head>
+	<body>
+		<h1>Professors List</h1>
+		<a th:href="@{/professors/create}">Add New Professor</a>
+		<table>
+			<thead>
+				<tr>
+					<th>Name</th>
+					<th>Surname</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="professor : ${professors}">
+					<td th:text="${professor.getName()}"></td>
+					<td th:text="${professor.getSurname()}"></td>
+					<td>
+						<a th:href="@{/professors/show/{id}(id=${professor.getIdPerson()})}">Show</a> |
+						<a th:href="@{/professors/update/{id}(id=${professor.getIdPerson()})}">Edit</a> |
+						<a th:href="@{/professors/delete/{id}(id=${professor.getIdPerson()})}">Delete</a>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<ul>
+			<li><a th:href="@{/courses/}">Courses</a></li>
+			<li><a th:href="@{/students/}">Students</a></li>
+			<li><a th:href="@{/professors/}">Professors</a></li>
+		</ul>
+	</body>
+</html>

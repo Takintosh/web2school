@@ -22,11 +22,16 @@
 					<td>
 						<a th:href="@{/students/show/{id}(id=${student.getIdPerson()})}">Show</a> |
 						<a th:href="@{/students/update/{id}(id=${student.getIdPerson()})}">Edit</a> |
-						<a th:href="@{/students/delete/{id}(id=${student.getIdPerson()})}">Delete</a> |
-						<a th:href="@{/students/show/{id}/assign-course (id=${student.getIdPerson()})}">Assign Course</a>
+						<a th:href="@{/students/delete/{id}(id=${student.getIdPerson()})}">Delete</a>
 					</td>
 				</tr>
 			</tbody>
 		</table>
+
+		<ul>
+			<li><a th:href="@{/courses/}">Courses</a></li>
+			<li><a th:href="@{/students/}">Students</a></li>
+			<li><a th:href="@{/professors/}">Professors</a></li>
+		</ul>
 	</body>
 </html>
