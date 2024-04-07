@@ -48,7 +48,7 @@
 	<input type="number" id="siape" name="siape">
 	<br>
 	<label for="courseSelect">Course:</label>
-	<select id="courseSelect" name="idCourse">
+	<select id="courseSelect" name="courseId">
 		<option  th:each="course : ${courses}" th:value="${course.idCourse}" th:text="${course.name}"></option>
 	</select>
 	<br>
